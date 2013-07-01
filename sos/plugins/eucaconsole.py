@@ -17,11 +17,14 @@
 import sos.plugintools
 import os
 
-class eucacore(sos.plugintools.PluginBase):
-    """Eucalyptus Cloud - Core
+class eucaconsole(sos.plugintools.PluginBase):
+    """Eucalyptus Cloud - Console
     """
+    def checkenabled(self):
+        if self.isInstalled("eucalyptus-console"):
+            return True
+        return False
 
     def setup(self):
-        self.addCopySpec("/etc/eucalyptus")
-        self.addCopySpec("/var/log/eucalyptus")
+        self.addCopySpec("/etc/eucalyptus-console")
         return
