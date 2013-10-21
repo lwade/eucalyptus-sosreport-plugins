@@ -97,7 +97,7 @@ If you don't know exactly what eucalyptus plugin failed please run the following
 sosreport --batch --only-plugins eucacore,eucadb,eucafrontend,eucaconsole -vv
 ```
 
-If you can identify a signle plugin that is having problems run only that plugin and pull the output.
+If you can identify a single plugin that is having problems run only that plugin and pull the output.
 
 ```shell
 sosreport --batch --only-plugins PLUGIN -vv
