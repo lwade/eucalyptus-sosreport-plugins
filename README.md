@@ -123,4 +123,4 @@ Contributing Code:
 ------------------
 First off, thank you.
 To submit any code you will need to clone the repository through github. Make any changes to the appropriate branch. Currently you would switch to the b2.2 branch and make your changes. Complete your submission by creating a pull request.
-It is polite to send Richard Isaacson a note as a heads-up when work is done.
+It is polite to send [Harold Spencer, Jr.](https://github.com/hspencer77) a note as a heads-up when work is done.
