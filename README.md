@@ -2,7 +2,7 @@
 
 Overview:
 =========
-[sosreport](https://github.com/sosreport/sosreport "sosreport/sosreport") is a tool used by many companies to gather the current state of a system into a portable archive primarily for use in troubleshooting. Eucalyptus CS members identified the potentials of sosreport and created a package with plugins that target Eucalyptus support needs. Everything is written in Python and is easy to modify to our needs.
+[sosreport](https://github.com/sosreport/sosreport "sosreport/sosreport") is a tool used by many companies to gather the current state of a system into a portable archive primarily for use in troubleshooting. Eucalyptus Customer Success members identified the potentials of sosreport and created a package with plugins that target Eucalyptus support needs. Everything is written in Python and is easy to modify to our needs.
 
 This project contains plugins for sosreport that focus on the collection needs of Eucalyptus Clouds. Once these plugins have been added to a system with sosreport when run sosreport will pick up and execute them if applicable and place the output into the archive.
 
@@ -18,7 +18,7 @@ eucalyptus-sosreport-plugins was formally a part of [doctor-euca](https://github
 
 You will want to make sure that when you execute sosreport that you have already sourced your eucarc file to get all of the correct output.
 
-The original work for the project was done by [Tom Ellis](https://github.com/tomellis). The torch was picked up by [Richard Isaacson](https://github.com/risaacson) to drive and improve the project.
+The original work for the project was done by [Tom Ellis](https://github.com/tomellis). The torch was picked up by [Richard Isaacson](https://github.com/risaacson) to drive and improve the project. Currently the project is being maintained by the Eucalyptus Tier 3 group, which is headed by [Harold Spencer, Jr.](https://github.com/hspencer77).
 
 Targeted Systems:
 =================
