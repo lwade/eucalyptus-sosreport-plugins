@@ -10,7 +10,7 @@ These plugins focus on these areas:
 * Console - if the Eucalyptus Console is installed.
 * Core - Logs and commands that exist on all eucalpyus installs.
 * DB - Output from the database.
-* Frontend - Executed on the frontend using the installed euca2ools.
+* Frontend - Executed on the frontend using the installed euca2ools and eucalyptus-admin-tools
 
 History:
 ========
