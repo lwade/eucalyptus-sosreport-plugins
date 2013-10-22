@@ -29,8 +29,8 @@ class eucafrontend(sos.plugintools.PluginBase):
         return False
 
     def eucacreds_setup(self):
-        getcreds_cmd = ["/usr/sbin/euca-get-credentials", "-a", "eucalyptus", "-u", "admin", "admin.zip"]
-        unzip_cmd = ["/usr/bin/unzip", "admin.zip", "-d", "/tmp/eucacreds"]
+        getcreds_cmd = ["/usr/sbin/euca-get-credentials", "-a", "eucalyptus", "-u", "admin", "/tmp/eucacreds/admin.zip"]
+        unzip_cmd = ["/usr/bin/unzip", "/tmp/eucacreds/admin.zip", "-d", "/tmp/eucacreds"]
         try:
             mkdir_output = os.mkdir("/tmp/eucacreds")
         except OSError, e:
@@ -204,6 +204,84 @@ class eucafrontend(sos.plugintools.PluginBase):
             euca2ools_conf.close()
             self.addDiagnose("Populated /etc/euca2ools/conf.d/sos-euca2ools.ini with admin creds")
 
+    def get_accountlist(self):
+        get_accountlist_cmd = ["/usr/bin/euare-accountlist", "--region", "admin@sosreport"]
+        try:
+            getaccountlist_output,unused_val = subprocess.Popen(get_accountlist_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        except OSError, e:
+            error_string = '%s' % e
+            if 'No such' in error_string:
+                self.addDiagnose("Error grabbing Euare Account List.")
+                raise OSError(e)
+            else:
+                self.addDiagnose("Error: %s" % e)
+                raise OSError(e) 
+        accounts =[]
+        for account_info in getaccountlist_output.splitlines():
+            entry = re.split(r'\t',account_info)
+            accounts.append(entry[0])    
+        return accounts
+
+    def get_account_info(self, account):
+        self.collectExtOutput("/usr/bin/euare-accountaliaslist --as-account " + account + " --region admin@sosreport", suggest_filename="euare-accountaliaslist-" + account)
+        self.collectExtOutput("/usr/bin/euare-accountlistpolicies -a " + account + " -v --pretty-print --region admin@sosreport", suggest_filename="euare-accountlistpolicies-" + account)
+        self.collectExtOutput("/usr/bin/euare-userlistbypath --as-account " + account + " --region admin@sosreport", suggest_filename="euare-userlistbypath-" + account)
+        self.collectExtOutput("/usr/bin/euare-grouplistbypath --as-account " + account + " --region admin@sosreport", suggest_filename="euare-grouplistbypath-" + account)
+
+    def get_userlist(self, account):
+        get_userlist_cmd = ["/usr/bin/euare-userlistbypath", "--as-account", account, "--region", "admin@sosreport"]
+        try:
+            getuserlist_output,unused_val = subprocess.Popen(get_userlist_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        except OSError, e:
+            error_string = '%s' % e
+            if 'No such' in error_string:
+                self.addDiagnose("Error grabbing Euare Account " + account + " User List.")
+                raise OSError(e)
+            else:
+                self.addDiagnose("Error: %s" % e)
+                raise OSError(e) 
+        users =[]
+        sColon = re.compile('[:]')
+        for user_info in getuserlist_output.splitlines():
+            entry = sColon.split(user_info)
+            user_id = entry[5].strip().split("/")
+            users.append(user_id[1])    
+        return users
+
+    def get_account_user_info(self, account, user):
+        self.collectExtOutput("/usr/bin/euare-usergetinfo --as-account " + account + " -u " + user + " --region admin@sosreport", suggest_filename="euare-usergetinfo-" + account + "-" + user)
+        self.collectExtOutput("/usr/bin/euare-usergetloginprofile --as-account " + account + " -u " + user + " --region admin@sosreport", suggest_filename="euare-usergetloginprofile-" + account + "-" + user)
+        self.collectExtOutput("/usr/bin/euare-userlistcerts --as-account " + account + " -u " + user + " --region admin@sosreport", suggest_filename="euare-userlistcerts-" + account + "-" + user)
+        self.collectExtOutput("/usr/bin/euare-usergetattributes --as-account " + account + " -u " + user + " --show-extra --region admin@sosreport", suggest_filename="euare-usergetattributes-" + account + "-" + user)
+        self.collectExtOutput("/usr/bin/euare-userlistgroups --as-account " + account + " -u " + user + " --region admin@sosreport", suggest_filename="euare-userlistgroups-" + account + "-" + user)
+        self.collectExtOutput("/usr/bin/euare-userlistkeys --as-account " + account + " -u " + user + " --region admin@sosreport", suggest_filename="euare-userlistkeys-" + account + "-" + user)
+        self.collectExtOutput("/usr/bin/euare-userlistpolicies --as-account " + account + " -u " + user + " -v --pretty-print --region admin@sosreport", suggest_filename="euare-userlistpolicies-" + account + "-" + user)
+    
+    def get_grouplist(self, account):
+        get_grouplist_cmd = ["/usr/bin/euare-grouplistbypath", "--as-account", account, "--region", "admin@sosreport"]
+        try:
+            getgrouplist_output,unused_val = subprocess.Popen(get_grouplist_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        except OSError, e:
+            error_string = '%s' % e
+            if 'No such' in error_string:
+                self.addDiagnose("Error grabbing Euare Account " + account + " Group List.")
+                raise OSError(e)
+            else:
+                self.addDiagnose("Error: %s" % e)
+                raise OSError(e) 
+        groups =[]
+        sColon = re.compile('[:]')
+        for group_info in getgrouplist_output.splitlines():
+            if re.search('iam', group_info):
+                entry = sColon.split(group_info)
+                group_id = entry[5].strip().split("/")
+                groups.append(group_id[1])    
+        return groups
+
+    def get_account_group_info(self, account, group):
+        self.collectExtOutput("/usr/bin/euare-grouplistusers --as-account " + account + " -g " + group + " --region admin@sosreport", suggest_filename="euare-grouplistusers-" + account + "-" + group)
+        self.collectExtOutput("/usr/bin/euare-grouplistpolicies --as-account " + account + " -g " + group + " -v --pretty-print --region admin@sosreport", suggest_filename="euare-grouplistpolicies-" + account + "-" + group)
+
     def cleanup(self):
         self.addDiagnose("### Cleanup credentials ###")
         self.collectExtOutput("rm -rf /tmp/eucacreds", suggest_filename="cleanup-eucacreds")
@@ -227,6 +305,14 @@ class eucafrontend(sos.plugintools.PluginBase):
         self.collectExtOutput("/usr/bin/euca-describe-snapshots verbose --region admin@sosreport", suggest_filename="euca-describe-snapshots-verbose")
         self.collectExtOutput("/usr/bin/euca-describe-volumes verbose --region admin@sosreport", suggest_filename="euca-describe-volumes-verbose")
         self.collectExtOutput("/usr/bin/euca-describe-tags --region admin@sosreport", suggest_filename="euca-describe-tags-verbose")
+        self.collectExtOutput("/usr/bin/euare-accountlist --region admin@sosreport", suggest_filename="euare-accountlist")
+        for account in self.get_accountlist():
+            self.get_account_info(account)
+            for user in self.get_userlist(account):
+                self.get_account_user_info(account, user)
+            for group in self.get_grouplist(account):
+                self.get_account_group_info(account, group)
+
         self.addDiagnose("### Grabbing Cloud Component Data ###")
         access_key = self.get_access_key()     
         secret_key = self.get_secret_key()
