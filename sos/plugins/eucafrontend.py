@@ -29,8 +29,8 @@ class eucafrontend(sos.plugintools.PluginBase):
         return False
 
     def eucacreds_setup(self):
-        getcreds_cmd = ["/usr/sbin/euca-get-credentials", "-a", "eucalyptus", "-u", "admin", "admin.zip"]
-        unzip_cmd = ["/usr/bin/unzip", "admin.zip", "-d", "/tmp/eucacreds"]
+        getcreds_cmd = ["/usr/sbin/euca-get-credentials", "-a", "eucalyptus", "-u", "admin", "/tmp/eucacreds/admin.zip"]
+        unzip_cmd = ["/usr/bin/unzip", "/tmp/eucacreds/admin.zip", "-d", "/tmp/eucacreds"]
         try:
             mkdir_output = os.mkdir("/tmp/eucacreds")
         except OSError, e:
@@ -224,7 +224,7 @@ class eucafrontend(sos.plugintools.PluginBase):
 
     def get_account_info(self, account):
         self.collectExtOutput("/usr/bin/euare-accountaliaslist --as-account " + account + " --region admin@sosreport", suggest_filename="euare-accountaliaslist-" + account)
-        self.collectExtOutput("/usr/bin/euare-accountlistpolicies -a " + account + " --region admin@sosreport", suggest_filename="euare-accountlistpolicies-" + account)
+        self.collectExtOutput("/usr/bin/euare-accountlistpolicies -a " + account + " -v --pretty-print --region admin@sosreport", suggest_filename="euare-accountlistpolicies-" + account)
         self.collectExtOutput("/usr/bin/euare-userlistbypath --as-account " + account + " --region admin@sosreport", suggest_filename="euare-userlistbypath-" + account)
         self.collectExtOutput("/usr/bin/euare-grouplistbypath --as-account " + account + " --region admin@sosreport", suggest_filename="euare-grouplistbypath-" + account)
 
@@ -255,7 +255,7 @@ class eucafrontend(sos.plugintools.PluginBase):
         self.collectExtOutput("/usr/bin/euare-usergetattributes --as-account " + account + " -u " + user + " --show-extra --region admin@sosreport", suggest_filename="euare-usergetattributes-" + account + "-" + user)
         self.collectExtOutput("/usr/bin/euare-userlistgroups --as-account " + account + " -u " + user + " --region admin@sosreport", suggest_filename="euare-userlistgroups-" + account + "-" + user)
         self.collectExtOutput("/usr/bin/euare-userlistkeys --as-account " + account + " -u " + user + " --region admin@sosreport", suggest_filename="euare-userlistkeys-" + account + "-" + user)
-        self.collectExtOutput("/usr/bin/euare-userlistpolicies --as-account " + account + " -u " + user + " --region admin@sosreport", suggest_filename="euare-userlistpolicies-" + account + "-" + user)
+        self.collectExtOutput("/usr/bin/euare-userlistpolicies --as-account " + account + " -u " + user + " -v --pretty-print --region admin@sosreport", suggest_filename="euare-userlistpolicies-" + account + "-" + user)
     
     def get_grouplist(self, account):
         get_grouplist_cmd = ["/usr/bin/euare-grouplistbypath", "--as-account", account, "--region", "admin@sosreport"]
@@ -280,7 +280,7 @@ class eucafrontend(sos.plugintools.PluginBase):
 
     def get_account_group_info(self, account, group):
         self.collectExtOutput("/usr/bin/euare-grouplistusers --as-account " + account + " -g " + group + " --region admin@sosreport", suggest_filename="euare-grouplistusers-" + account + "-" + group)
-        self.collectExtOutput("/usr/bin/euare-grouplistpolicies --as-account " + account + " -g " + group + " --region admin@sosreport", suggest_filename="euare-grouplistpolicies-" + account + "-" + group)
+        self.collectExtOutput("/usr/bin/euare-grouplistpolicies --as-account " + account + " -g " + group + " -v --pretty-print --region admin@sosreport", suggest_filename="euare-grouplistpolicies-" + account + "-" + group)
 
     def cleanup(self):
         self.addDiagnose("### Cleanup credentials ###")
