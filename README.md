@@ -1,4 +1,4 @@
-# eucalyptus-sosreport-plugins
+# Eucalyptus Plugins for Sosreport
 
 Overview:
 =========
