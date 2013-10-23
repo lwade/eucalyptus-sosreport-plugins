@@ -45,11 +45,19 @@ yum install eucalyptus-sos-plugins
 
 Manual Installation:
 --------------------
-To install eucalyptus-sosreport-plugins manually you will need to have git installed on the system along with sosreport compatible with r2.2.
+To install eucalyptus-sosreport-plugins manually you will need to have the following installed:
+
+* git 
+* sosreport compatible with r2.2
+* python-devel 
+* libxml2-python
+* yum groupinstall -y 'Development Tools'
 
 ```shell
 git clone https://github.com/eucalyptus/eucalyptus-sosreport-plugins.git
-cp eucalyptus-sosreport-plugins/sos/plugins/euca*.py /usr/lib/python2.6/site-packages/sos/plugins/euca*.py
+cd eucalyptus-sosreport-plugins
+make rpm
+sudo yum install dist-build/noarch/eucalyptus-sos-plugins-<version>.el6.noarch.rpm
 ```
 
 Execution:
