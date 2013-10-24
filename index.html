@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Eucalyptus-sosreport-plugins by eucalyptus</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Eucalyptus-sosreport-plugins</h1>
+        <p>Custom sosreport plugins for working with Eucalyptus Clouds</p>
+        <p class="view"><a href="https://github.com/eucalyptus/eucalyptus-sosreport-plugins">View the Project on GitHub <small>eucalyptus/eucalyptus-sosreport-plugins</small></a></p>
+        <ul>
+          <li><a href="https://github.com/eucalyptus/eucalyptus-sosreport-plugins/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/eucalyptus/eucalyptus-sosreport-plugins/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/eucalyptus/eucalyptus-sosreport-plugins">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="eucalyptus-plugins-for-sosreport" class="anchor" href="#eucalyptus-plugins-for-sosreport"><span class="octicon octicon-link"></span></a>Eucalyptus Plugins for Sosreport</h1>
+
+<h2>
+<a name="overview" class="anchor" href="#overview"><span class="octicon octicon-link"></span></a>Overview:</h2>
+
+<p><a href="https://github.com/sosreport/sosreport" title="sosreport/sosreport">sosreport</a> is a tool used by many companies to gather the current state of a system into a portable archive primarily for use in troubleshooting. Eucalyptus Customer Success members identified the potentials of sosreport and created a package with plugins that target Eucalyptus support needs. Everything is written in Python and is easy to modify to our needs.</p>
+
+<p>This project contains plugins for sosreport that focus on the collection needs of Eucalyptus Clouds. Once these plugins have been added to a system with sosreport when run sosreport will pick up and execute them if applicable and place the output into the archive.</p>
+
+<p>These plugins focus on these areas:</p>
+
+<ul>
+<li>Console - if the Eucalyptus Console is installed.</li>
+<li>Core - Logs and commands that exist on all eucalpyus installs.</li>
+<li>DB - Output from the database.</li>
+<li>Frontend - Executed on the frontend using the installed euca2ools and eucalyptus-admin-tools</li>
+</ul><h2>
+<a name="history" class="anchor" href="#history"><span class="octicon octicon-link"></span></a>History:</h2>
+
+<p>eucalyptus-sosreport-plugins was formally a part of <a href="https://github.com/eucalyptus/doctor-euca" title="eucalyptus/doctor-euca">doctor-euca</a>.</p>
+
+<p>You will want to make sure that when you execute sosreport that you have already sourced your eucarc file to get all of the correct output.</p>
+
+<p>The original work for the project was done by <a href="https://github.com/tomellis">Tom Ellis</a>. The torch was picked up by <a href="https://github.com/risaacson">Richard Isaacson</a> to drive and improve the project. Currently the project is being maintained by the Eucalyptus Tier 3 group, which is headed by <a href="https://github.com/hspencer77">Harold Spencer, Jr.</a>.</p>
+
+<h2>
+<a name="targeted-systems" class="anchor" href="#targeted-systems"><span class="octicon octicon-link"></span></a>Targeted Systems:</h2>
+
+<p>The plugins package currently targets the version of sosreport that exists in the main CentOS 6.4 repository.</p>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation:</h2>
+
+<p>It is preferred to install eucalyptus-sosreport-plugins via the package but if not once sosreport is installed you are able to manually copy the files into the plugins directory.</p>
+
+<h4>
+<a name="package-installation" class="anchor" href="#package-installation"><span class="octicon octicon-link"></span></a>Package Installation:</h4>
+
+<hr><p>Add the Eucalyptus Tools Repository.</p>
+
+<pre lang="shell"><code>cd /etc/yum.repos.d
+wget 'http://downloads.eucalyptus.com/software/tools/tools.repo'
+</code></pre>
+
+<p>Install the eucalyptus-sos-tools package which will install the sos package if it is not already installed.</p>
+
+<pre lang="shell"><code>yum install eucalyptus-sos-plugins
+</code></pre>
+
+<h4>
+<a name="manual-installation" class="anchor" href="#manual-installation"><span class="octicon octicon-link"></span></a>Manual Installation:</h4>
+
+<hr><p>To install eucalyptus-sosreport-plugins manually you will need to have the following installed:</p>
+
+<ul>
+<li>git</li>
+<li>sosreport compatible with r2.2</li>
+<li>python-devel</li>
+<li>libxml2-python</li>
+<li>yum groupinstall -y 'Development Tools'</li>
+</ul><pre lang="shell"><code>git clone https://github.com/eucalyptus/eucalyptus-sosreport-plugins.git
+cd eucalyptus-sosreport-plugins
+make rpm
+sudo yum install dist-build/noarch/eucalyptus-sos-plugins-&lt;version&gt;.el6.noarch.rpm
+</code></pre>
+
+<h2>
+<a name="execution" class="anchor" href="#execution"><span class="octicon octicon-link"></span></a>Execution:</h2>
+
+<p>Execution of sosreport is simple and straight forward. You will need to make sure that it is executed on each of the hosts that you want to collect data from. You will need to source your eucarc any time that you are executing sosreport with the eucalyptus-sosreport-plugins on a CLC host.</p>
+
+<p>At the very least we want to make sure to use the <code>–batch</code> option so that interactive questions are no asked.</p>
+
+<pre lang="shell"><code>sosreport --batch
+</code></pre>
+
+<p>Execution could take severl moments. If it seems to be running long and it is not stuck on the databse the system plugin could be stuck. To skip the system plugin execute the following command.</p>
+
+<pre lang="shell"><code>sosreport --batch --skip-plugins=system
+</code></pre>
+
+<p>After you have executed sosreport you should move the resulting archive out of /tmp as you risk imparing the system if /tmp is too full. If /tmp is limited you can create the archive in an alternate location by executing.</p>
+
+<pre lang="shell"><code>sosreport --batch --tmp-dir SOMEDIRECTORY
+</code></pre>
+
+<h2>
+<a name="risks" class="anchor" href="#risks"><span class="octicon octicon-link"></span></a>Risks:</h2>
+
+<p>Systems evolve and applications are upgraded. Going forward we need to make sure that we keep in sync with the version of sosreport that is in the mainline repositories. sosreport r2.3 has a lot of syntax changes from r2.2. When the main repos switch to sosreport r2.3+ we will need to rework our plugins to match the newer framework.
+Currently sosreport's github is at version 3.0 of the software.</p>
+
+<h2>
+<a name="versioning" class="anchor" href="#versioning"><span class="octicon octicon-link"></span></a>Versioning:</h2>
+
+<p>r2.2 branch -&gt; sosreport 2.2 (CentOS 6.4 uses this.)</p>
+
+<p>r2.3 branch -&gt; sosreport 2.3 &amp; 3.0(?) (This is the future.)</p>
+
+<p>master branch -&gt; r2.2 branch</p>
+
+<h2>
+<a name="troubleshooting" class="anchor" href="#troubleshooting"><span class="octicon octicon-link"></span></a>Troubleshooting:</h2>
+
+<p>You are invited to point out any problems that might have happened while running the plugins. When submitting an issue please add the following so that we are able to best track down what the issue is.</p>
+
+<p>If you don't know exactly what eucalyptus plugin failed please run the following and attach the output.</p>
+
+<pre lang="shell"><code>sosreport --batch --only-plugins eucacore,eucadb,eucafrontend,eucaconsole -vv
+</code></pre>
+
+<p>If you can identify a single plugin that is having problems run only that plugin and pull the output.</p>
+
+<pre lang="shell"><code>sosreport --batch --only-plugins PLUGIN -vv
+</code></pre>
+
+<p>It can also be helpful to avoid creating an archive. If you use the '–build' flag to leave the directory structure intact. sosreport will print a message about where the directory structure is located.</p>
+
+<pre lang="shell"><code>sosreport --batch --build
+</code></pre>
+
+<h2>
+<a name="code-repositories" class="anchor" href="#code-repositories"><span class="octicon octicon-link"></span></a>Code Repositories:</h2>
+
+<p>Official Repository: <a href="https://github.com/eucalyptus/eucalyptus-sosreport-plugins">eucalyptus/eucalyptus-sosreport-plugins</a></p>
+
+<p>Original Repository: <a href="https://github.com/risaacson/eucalyptus-sosreport-plugins">risaacson/eucalyptus-sosreport-plugins</a></p>
+
+<h2>
+<a name="issuesimprovement" class="anchor" href="#issuesimprovement"><span class="octicon octicon-link"></span></a>Issues/Improvement:</h2>
+
+<p>We are completely open and transparent with eucalyptus-sosreport-plugins as the source resides in a public repository on github. Any issues or requests for improvement should be placed on the github issues page: <a href="https://github.com/eucalyptus/eucalyptus-sosreports/issues">eucalyptus-sosreport-plugins/issues</a></p>
+
+<h4>
+<a name="contributing-code" class="anchor" href="#contributing-code"><span class="octicon octicon-link"></span></a>Contributing Code:</h4>
+
+<hr><p>First off, thank you.
+To submit any code you will need to clone the repository through github. Make any changes to the appropriate branch. Currently you would switch to the b2.2 branch and make your changes. Complete your submission by creating a pull request.
+It is polite to send <a href="https://github.com/hspencer77">Harold Spencer, Jr.</a> a note as a heads-up when work is done.</p>
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/eucalyptus">eucalyptus</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
