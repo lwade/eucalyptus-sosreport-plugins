@@ -115,6 +115,26 @@ sudo yum install dist-build/noarch/eucalyptus-sos-plugins-&lt;version&gt;.el6.no
 <pre lang="shell"><code>sosreport --batch --tmp-dir SOMEDIRECTORY
 </code></pre>
 
+<h4>
+<a name="eutester-integration" class="anchor" href="#eutester-integration"><span class="octicon octicon-link"></span></a><a href="http://eucalyptus.github.io/eutester/" target="_blank">Eutester</a> Integration</h4>
+
+<p>An additional way to run the eucalyptus sosreport plugins is using the automated testing framework for Eucalyptus - <a href="http://eucalyptus.github.io/eutester/" target="_blank">Eutester</a>.</p>
+
+<p>The <a href="https://github.com/eucalyptus/eutester/blob/testing/testcases/cloud_admin/run_sos_report.py" target="_blank">script</a> is located under the testcases directory under the eucalyptus/eutester repository on Github. In order to run the script, <a href="https://github.com/eucalyptus/eutester#installation" target="_blank">eutester needs to be installed</a>.  Once eutester is installed, the script can be executed as demonstrated in the example below:</p>
+
+<pre lang="shell"><code>./run_sos_report.py --local-dir /my/log/stash/dir 
+--remote-dir /scratch/dir/on/sut --config mysetup.conf --password foobar
+</code></pre>
+
+Some key things to note:
+<ul>
+	<li>Local directory defaults to working directory name (i.e. <a href="http://linux.die.net/man/1/pwd" target="_blank">pwd</a>)</li>
+	<li>Remote directory on the Eucalyptus components defaults to /root</li>
+	<li><a href="https://github.com/eucalyptus/eutester#config-file" target="_blank">Configuration file</a> is required</li>
+	<li>Password is required to connect to Eucalyptus components if ssh keys haven't been synced</li>
+</ul>
+	
+
 <h2>
 <a name="risks" class="anchor" href="#risks"><span class="octicon octicon-link"></span></a>Risks</h2>
 
