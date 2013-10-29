@@ -21,6 +21,11 @@ class eucadb(sos.plugintools.PluginBase):
     """Eucalyptus Cloud - PostgreSQL
     """
 
+    def checkenabled(self):
+        if self.isInstalled("postgresql91") and self.isInstalled("postgresql91-server") and self.isInstalled("eucalyptus-cloud"):
+            return True
+        return False
+
     def setup(self):
         if os.path.isfile('/usr/pgsql-9.1/bin/pg_dump'):
             self.collectExtOutput("/usr/pgsql-9.1/bin/pg_dump -c -o -h /var/lib/eucalyptus/db/data -p 8777 -U root eucalyptus_auth", suggest_filename="eucalyptus_auth.sql", timeout = 600)
