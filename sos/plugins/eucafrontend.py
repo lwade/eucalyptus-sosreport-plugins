@@ -27,6 +27,50 @@ class eucafrontend(sos.plugintools.PluginBase):
             return True
         return False
 
+    def clc_status(self):
+        clc_check_cmd = ["/sbin/service", "eucalyptus-cloud", "status"]
+        """
+        Check for eucalyptus-cloud process 
+        """
+        try:
+            clc_check_output,unused_val = subprocess.Popen(clc_check_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        except OSError, e:
+            if 'No such' in error_string:
+                self.addDiagnose("Error checking eucalyptus-cloud process status")
+                raise OSError(e)
+            else:
+                self.addDiagnose("Error: %s" % e)
+                raise OSError(e) 
+
+        if re.match("^Eucalyptus services are running", clc_check_output):
+            self.addDiagnose("Eucalyptus services are running")
+            pass
+        else:
+            """
+            Check for eucalyptus-cloud process (in case error with /sbin/service check) 
+            """
+            clc_pgrep_cmd = ["/usr/bin/pgrep", "eucalyptus"]
+            try:
+                clc_pgrep_chk, unused_val = subprocess.Popen(clc_pgrep_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()                
+            except OSError, e:
+                if 'No such' in error_string:
+                    self.addDiagnose("Error checking eucalyptus-cloud process status")
+                    raise OSError(e)
+                else:
+                    self.addDiagnose("Error: %s" % e)
+                    raise OSError(e) 
+            
+            if clc_pgrep_chk:
+                for proc in clc_pgrep_chk.splitlines():
+                    if not proc:
+                        raise
+                    else:
+                        self.addDiagnose("Eucalyptus services are running: " + proc + ".")
+            else:
+                self.addDiagnose("Error checking eucalyptus-cloud process status")
+                print "### eucalyptus-cloud process doesn't seem to be running"
+                raise
+
     def eucacreds_setup(self):
         try:
             mkdir_output = tempfile.mkdtemp(dir='/tmp')
@@ -283,6 +327,8 @@ class eucafrontend(sos.plugintools.PluginBase):
         self.collectExtOutput("rm -rf /etc/euca2ools/conf.d/sos-euca2ools.ini", suggest_filename="cleanup-sos-euca2ools-config")
  
     def setup(self):
+        self.addDiagnose("### Check to make sure eucalyptus-cloud is running ###")
+        self.clc_status()
         self.addDiagnose("### Grabbing eucalyptus/admin credentials ###")
         tmp_dir = self.eucacreds_setup()
         self.addDiagnose("### Setting up sos-euca2ools.ini file ###")
