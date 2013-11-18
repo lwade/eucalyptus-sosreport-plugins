@@ -32,5 +32,10 @@ class eucaconsole(sos.plugintools.PluginBase):
             - log file location under /var/log/eucalyptus-console directory
         """
         self.addCopySpec("/etc/eucalyptus-console")
-        self.addCopySpec("/var/log/eucalyptus-console/*")
+        """
+        Check to see if /var/log/eucalyptus-console exists - this was a change for Eucalyptus 3.4.0-1
+        If it doesn't exists, then the Eucalyptus User Console logs will be in /var/log/messages
+        """
+        if os.path.exists('/var/log/eucalyptus-console'):
+            self.addCopySpec("/var/log/eucalyptus-console/*")
         return

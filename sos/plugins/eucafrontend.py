@@ -72,6 +72,9 @@ class eucafrontend(sos.plugintools.PluginBase):
                 raise
 
     def eucacreds_setup(self):
+        """
+        Grab admin user of eucalyptus account for euca2ools commands
+        """
         try:
             mkdir_output = tempfile.mkdtemp(dir='/tmp')
         except OSError, e:
@@ -103,6 +106,9 @@ class eucafrontend(sos.plugintools.PluginBase):
         return mkdir_output
 
     def get_access_key(self, tmp_dir):
+        """
+        Grab AWS_ACCESS_KEY from unzip admin/eucalyptus credentials
+        """
         try:
             with open(tmp_dir + "/eucarc") as eucarc_file:
                 for line in eucarc_file:
@@ -123,6 +129,9 @@ class eucafrontend(sos.plugintools.PluginBase):
                 raise OSError(e) 
  
     def get_secret_key(self, tmp_dir):
+        """
+        Grab AWS_SECRET_KEY from unzip admin/eucalyptus credentials
+        """
         try:
             with open(tmp_dir + "/eucarc") as eucarc_file:
                 for line in eucarc_file:
@@ -143,6 +152,9 @@ class eucafrontend(sos.plugintools.PluginBase):
                 raise OSError(e) 
  
     def get_account_id(self, tmp_dir):
+        """
+        Grab EC2_USER_ID from unzip admin/eucalyptus credentials
+        """
         try:
             with open(tmp_dir + "/eucarc") as eucarc_file:
                 for line in eucarc_file:
@@ -163,6 +175,9 @@ class eucafrontend(sos.plugintools.PluginBase):
                 raise OSError(e) 
 
     def get_s3_url(self, tmp_dir):
+        """
+        Grab S3_URL from unzip admin/eucalyptus credentials
+        """
         try:
             with open(tmp_dir + "/eucarc") as eucarc_file:
                 for line in eucarc_file:
@@ -183,6 +198,9 @@ class eucafrontend(sos.plugintools.PluginBase):
                 raise OSError(e) 
         
     def get_ec2_url(self, tmp_dir):
+        """
+        Grab EC2_URL from unzip admin/eucalyptus credentials
+        """
         try:
             with open(tmp_dir + "/eucarc") as eucarc_file:
                 for line in eucarc_file:
@@ -203,6 +221,10 @@ class eucafrontend(sos.plugintools.PluginBase):
                 raise OSError(e) 
         
     def euca2ools_conf_setup(self, tmp_dir):
+        """
+        Create ini file under /etc/euca2ools/conf.d directory from
+        information contained in unzip admin/eucalyptus credentials file (eucarc)
+        """
         try:
             mkdir_output = os.mkdir("/etc/euca2ools/conf.d")
         except OSError, e:
@@ -234,6 +256,7 @@ class eucafrontend(sos.plugintools.PluginBase):
             euca2ools_conf.write("monitoring-url = http://127.0.0.1:8773/services/CloudWatch/\n")
             euca2ools_conf.write("s3-url = " + s3_url + "/" + "\n")
             euca2ools_conf.write("sts-url = http://127.0.0.1:8773/services/Tokens/\n")
+            euca2ools_conf.write("eustore-url = http://emis.eucalyptus.com/\n")
             euca2ools_conf.write("configuration-url = http://127.0.0.1:8773/services/Configuration/\n")
             euca2ools_conf.write("empyrean-url = http://127.0.0.1:8773/services/Empyrean/\n")
             euca2ools_conf.write("properties-url = http://127.0.0.1:8773/services/Properties/\n")
@@ -244,6 +267,9 @@ class eucafrontend(sos.plugintools.PluginBase):
             self.addDiagnose("Populated /etc/euca2ools/conf.d/sos-euca2ools.ini with admin creds")
 
     def get_accountlist(self):
+        """
+        Grab a listing of Euare accounts and return the list
+        """
         get_accountlist_cmd = ["/usr/bin/euare-accountlist", "--region", "admin@sosreport"]
         try:
             getaccountlist_output,unused_val = subprocess.Popen(get_accountlist_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
@@ -262,12 +288,18 @@ class eucafrontend(sos.plugintools.PluginBase):
         return accounts
 
     def get_account_info(self, account):
+        """
+        Grab resources associated with the Euare account passed in
+        """
         self.collectExtOutput("/usr/bin/euare-accountaliaslist --as-account " + account + " --region admin@sosreport", suggest_filename="euare-accountaliaslist-" + account)
         self.collectExtOutput("/usr/bin/euare-accountlistpolicies -a " + account + " -v --region admin@sosreport", suggest_filename="euare-accountlistpolicies-" + account)
         self.collectExtOutput("/usr/bin/euare-userlistbypath --as-account " + account + " --region admin@sosreport", suggest_filename="euare-userlistbypath-" + account)
         self.collectExtOutput("/usr/bin/euare-grouplistbypath --as-account " + account + " --region admin@sosreport", suggest_filename="euare-grouplistbypath-" + account)
 
     def get_userlist(self, account):
+        """
+        Grab list of users of the Euare account passed in and return the list of users
+        """
         get_userlist_cmd = ["/usr/bin/euare-userlistbypath", "--as-account", account, "--region", "admin@sosreport"]
         try:
             getuserlist_output,unused_val = subprocess.Popen(get_userlist_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
@@ -288,6 +320,9 @@ class eucafrontend(sos.plugintools.PluginBase):
         return users
 
     def get_account_user_info(self, account, user):
+        """
+        Grab resources of users in the Euare account passed in
+        """
         self.collectExtOutput("/usr/bin/euare-usergetinfo --as-account " + account + " -u " + user + " --region admin@sosreport", suggest_filename="euare-usergetinfo-" + account + "-" + user)
         self.collectExtOutput("/usr/bin/euare-usergetloginprofile --as-account " + account + " -u " + user + " --region admin@sosreport", suggest_filename="euare-usergetloginprofile-" + account + "-" + user)
         self.collectExtOutput("/usr/bin/euare-userlistcerts --as-account " + account + " -u " + user + " --region admin@sosreport", suggest_filename="euare-userlistcerts-" + account + "-" + user)
@@ -297,6 +332,9 @@ class eucafrontend(sos.plugintools.PluginBase):
         self.collectExtOutput("/usr/bin/euare-userlistpolicies --as-account " + account + " -u " + user + " -v --region admin@sosreport", suggest_filename="euare-userlistpolicies-" + account + "-" + user)
     
     def get_grouplist(self, account):
+        """
+        Grab the groups from the Euare account passed in and return the list
+        """
         get_grouplist_cmd = ["/usr/bin/euare-grouplistbypath", "--as-account", account, "--region", "admin@sosreport"]
         try:
             getgrouplist_output,unused_val = subprocess.Popen(get_grouplist_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
@@ -318,10 +356,16 @@ class eucafrontend(sos.plugintools.PluginBase):
         return groups
 
     def get_account_group_info(self, account, group):
+        """
+        Grab the resources of the groups in the Euare account passed in
+        """
         self.collectExtOutput("/usr/bin/euare-grouplistusers --as-account " + account + " -g " + group + " --region admin@sosreport", suggest_filename="euare-grouplistusers-" + account + "-" + group)
         self.collectExtOutput("/usr/bin/euare-grouplistpolicies --as-account " + account + " -g " + group + " -v --region admin@sosreport", suggest_filename="euare-grouplistpolicies-" + account + "-" + group)
 
     def cleanup(self, tmp_dir):
+        """
+        Clean up temporary directory and sos-euca2ools.ini file.
+        """
         self.addDiagnose("### Cleanup credentials ###")
         self.collectExtOutput("rm -rf " + tmp_dir, suggest_filename="cleanup-tmpeucacreds")
         self.collectExtOutput("rm -rf /etc/euca2ools/conf.d/sos-euca2ools.ini", suggest_filename="cleanup-sos-euca2ools-config")
@@ -340,6 +384,7 @@ class eucafrontend(sos.plugintools.PluginBase):
         self.collectExtOutput("/usr/bin/euca-describe-availability-zones verbose --region admin@sosreport", suggest_filename="euca-describe-availability-zones-verbose")
         self.collectExtOutput("/usr/bin/euca-describe-groups verbose --region admin@sosreport", suggest_filename="euca-describe-groups-verbose")
         self.collectExtOutput("/usr/bin/euca-describe-images --all --region admin@sosreport", suggest_filename="euca-describe-images-all")
+        self.collectExtOutput("/usr/bin/eustore-describe-images -v --region admin@sosreport", suggest_filename="eustore-describe-images")
         self.collectExtOutput("/usr/bin/euca-describe-instances verbose --region admin@sosreport", suggest_filename="euca-describe-instances-verbose")
         self.collectExtOutput("/usr/bin/euca-describe-keypairs verbose --region admin@sosreport", suggest_filename="euca-describe-keypairs-verbose")
         self.collectExtOutput("/usr/bin/euca-describe-snapshots verbose --region admin@sosreport", suggest_filename="euca-describe-snapshots-verbose")
