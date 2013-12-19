@@ -7,6 +7,7 @@ This project contains plugins for sosreport that focus on the collection needs o
 
 These plugins focus on these areas:
 * Console - if the Eucalyptus Console is installed.
+* Cluster - Information specific to the Cluster Controller
 * Core - Logs and commands that exist on all eucalpyus installs.
 * DB - Output from the database.
 * Frontend - Executed on the frontend using the installed euca2ools and eucalyptus-admin-tools
@@ -94,7 +95,7 @@ You are invited to point out any problems that might have happened while running
 If you don't know exactly what eucalyptus plugin failed please run the following and attach the output.
 
 ```shell
-sosreport --batch --only-plugins eucacore,eucadb,eucafrontend,eucaconsole -vv
+sosreport --batch --only-plugins eucacore,eucadb,eucafrontend,eucaconsole,eucacluster -vv
 ```
 
 If you can identify a single plugin that is having problems run only that plugin and pull the output.
