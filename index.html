@@ -44,6 +44,8 @@
 <li><a href="https://github.com/eucalyptus/eucalyptus-sosreport-plugins/blob/master/sos/plugins/eucacore.py" target="_blank">eucacore</a> - Logs and core information that exist on all machines where a Eucalyptus component is installed.</li>
 <li><a href="https://github.com/eucalyptus/eucalyptus-sosreport-plugins/blob/master/sos/plugins/eucadb.py" target="_blank">eucadb</a> - Output from the Eucalyptus database.</li>
 <li><a href="https://github.com/eucalyptus/eucalyptus-sosreport-plugins/blob/master/sos/plugins/eucafrontend.py" target="_blank">eucafrontend</a> - Executed on the frontend (CLC) using the installed euca2ools and eucalyptus-admin-tools</li>
+<li><a href="https://github.com/eucalyptus/eucalyptus-sosreport-plugins/blob/master/sos/plugins/eucacluster.py" target="_blank">eucacluster</a> - Executed on the Cluster Controller (CC); grabs information unique to the CC</li>
+	
 </ul><h2>
 <a name="history" class="anchor" href="#history"><span class="octicon octicon-link"></span></a>History</h2>
 
@@ -157,7 +159,7 @@ Currently sosreport's github is at version 3.0 of the software.</p>
 
 <p>If you don't know exactly what eucalyptus plugin failed please run the following and attach the output.</p>
 
-<pre lang="shell"><code>sosreport --batch --only-plugins eucacore,eucadb,eucafrontend,eucaconsole -vv
+<pre lang="shell"><code>sosreport --batch --only-plugins eucacore,eucacluster,eucadb,eucafrontend,eucaconsole -vv
 </code></pre>
 
 <p>If you can identify a single plugin that is having problems run only that plugin and pull the output.</p>
