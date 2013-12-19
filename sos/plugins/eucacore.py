@@ -16,6 +16,7 @@
 
 import sos.plugintools
 import os
+import glob
 
 class eucacore(sos.plugintools.PluginBase):
     """Eucalyptus Cloud - Core
@@ -31,4 +32,7 @@ class eucacore(sos.plugintools.PluginBase):
         self.addCopySpec("/var/log/eucalyptus/*")
         if os.path.isfile('/usr/bin/sha1sum'):
             self.collectExtOutput("find /var/lib/eucalyptus/keys -type f -print | xargs -I {} sha1sum {}", suggest_filename="sha1sum-eucalyptus-keys")
+        hprof_list = glob.glob('/var/log/eucalyptus/*.hprof')
+        if hprof_list:
+            self.collectExtOutput("rm -rf /var/log/eucalyptus/*.hprof", suggest_filename="hprof-removal")
         return
