@@ -15,8 +15,8 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 import sos.plugintools
-import os
-import glob
+import subprocess
+import csv
 
 class eucanode(sos.plugintools.PluginBase):
     """Eucalyptus Cloud - Node Controller
@@ -28,5 +28,11 @@ class eucanode(sos.plugintools.PluginBase):
 
     def setup(self):
         self.collectExtOutput("/usr/bin/virsh list", suggest_filename="virsh-list")
+
+        virsh_result = subprocess.Popen("virsh list | tail -n +3", stdout=subprocess.PIPE, shell=True)
+        output, err = virsh_result.communicate()
+        reader = csv.DictReader(output.decode('ascii').splitlines(), delimiter=' ', skipinitialspace=True, fieldnames=['id', 'name', 'state'])
+        for row in reader:
+            self.collectExtOutput("virsh dumpxml " + row['id'], suggest_filename=row['name'] + "_xml")
         return
 
