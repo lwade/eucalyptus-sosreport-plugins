@@ -382,6 +382,7 @@ class eucafrontend(sos.plugintools.PluginBase):
         self.addDiagnose("### Grabbing Cloud Resource Data ###")
         self.collectExtOutput("/usr/bin/euca-describe-addresses verbose --region admin@sosreport", suggest_filename="euca-describe-addresses-verbose")
         self.collectExtOutput("/usr/bin/euca-describe-availability-zones verbose --region admin@sosreport", suggest_filename="euca-describe-availability-zones-verbose")
+        self.collectExtOutput("/usr/bin/euca-describe-instance-types --show-capacity --region admin@sosreport", suggest_filename="euca-describe-instance-types-show-capacity")
         self.collectExtOutput("/usr/bin/euca-describe-groups verbose --region admin@sosreport", suggest_filename="euca-describe-groups-verbose")
         self.collectExtOutput("/usr/bin/euca-describe-images --all --region admin@sosreport", suggest_filename="euca-describe-images-all")
         self.collectExtOutput("/usr/bin/eustore-describe-images -v --region admin@sosreport", suggest_filename="eustore-describe-images")
