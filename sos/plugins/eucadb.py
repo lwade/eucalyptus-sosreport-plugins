@@ -68,4 +68,20 @@ class eucadb(sos.plugintools.PluginBase):
             self.collectExtOutput("/usr/pgsql-9.1/bin/pg_dump -c -o -h /var/lib/eucalyptus/db/data -p 8777 -U root eucalyptus_walrus", suggest_filename="eucalyptus_walrus.sql", timeout = 600)
         if os.path.isfile('/usr/pgsql-9.1/bin/psql') and self.check_postgres():
             self.collectExtOutput("/usr/pgsql-9.1/bin/psql -h /var/lib/eucalyptus/db/data -p 8777 -U root -c \"SELECT pg_database.datname,pg_database_size(pg_database.datname),pg_size_pretty(pg_database_size(pg_database.datname)) FROM pg_database ORDER BY pg_database_size DESC;\" -d database_events", suggest_filename="database_sizes.txt", timeout = 600)
+
+        if os.path.isfile('/var/lib/eucalyptus/db/data/pg_hba.conf'):
+            self.addCopySpec('/var/lib/eucalyptus/db/data/pg_hba.conf')
+
+        if os.path.isfile('/var/lib/eucalyptus/db/data/pg_hba.conf.org'):
+            self.addCopySpec('/var/lib/eucalyptus/db/data/pg_hba.conf.org')
+
+        if os.path.isfile('/var/lib/eucalyptus/db/data/pg_ident.conf'):
+            self.addCopySpec('/var/lib/eucalyptus/db/data/pg_ident.conf')
+
+        if os.path.isfile('/var/lib/eucalyptus/db/data/postgresql.conf'):
+            self.addCopySpec('/var/lib/eucalyptus/db/data/postgresql.conf')
+
+        if os.path.isfile('/var/lib/eucalyptus/db/data/postgresql.conf.org'):
+            self.addCopySpec('/var/lib/eucalyptus/db/data/postgresql.conf.org')
+
         return
