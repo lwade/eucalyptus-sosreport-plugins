@@ -36,4 +36,6 @@ class eucacore(sos.plugintools.PluginBase):
         hprof_list = glob.glob('/var/log/eucalyptus/*.hprof')
         if hprof_list:
             self.collectExtOutput("rm -rf /var/log/eucalyptus/*.hprof", suggest_filename="hprof-removal")
+        if os.path.isfile('/sbin/iptables-save'):
+            self.collectExtOutput("/sbin/iptables-save --counters", suggest_filename="iptables-save-counters")
         return

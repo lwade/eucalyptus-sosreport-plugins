@@ -391,13 +391,13 @@ class eucafrontend(sos.plugintools.PluginBase):
             euca2ools_conf.close()
             self.addDiagnose("Populated /etc/euca2ools/conf.d/sos-euca2ools.ini with admin creds")
 
-    def get_accountlist(self):
+    def get_accountlist(self, tmp_dir=''):
         """
         Grab a listing of Euare accounts and return the list
         """
         self.addDiagnose("### Grabbing version of euca2ools ###")
         euca2ools_version = self.checkversion('euca2ools')
-        if re.match('^2.1+', euca2ools_version):
+        if re.match('^2.1+', euca2ools_version) and tmp_dir:
             access_key = self.get_access_key(tmp_dir)     
             secret_key = self.get_secret_key(tmp_dir)
             iam_url = self.get_iam_url(tmp_dir)
@@ -421,38 +421,41 @@ class eucafrontend(sos.plugintools.PluginBase):
             accounts.append(entry[0])    
         return accounts
 
-    def get_account_info(self, account):
+    def get_account_info(self, account, tmp_dir=''):
         """
         Grab resources associated with the Euare account passed in
         """
         self.addDiagnose("### Grabbing version of euca2ools ###")
         euca2ools_version = self.checkversion('euca2ools')
-        if re.match('^2.1+', euca2ools_version):
+        if re.match('^2.1+', euca2ools_version) and tmp_dir:
             access_key = self.get_access_key(tmp_dir)     
             secret_key = self.get_secret_key(tmp_dir)
             iam_url = self.get_iam_url(tmp_dir)
             creds_info = " -U " + iam_url + " -I " + access_key + " -S " + secret_key
-            self.collectExtOutput("/usr/bin/euare-accountaliaslist --as-account " + account + creds_info, suggest_filename="euare-accountaliaslist-" + account)
-            self.collectExtOutput("/usr/bin/euare-accountlistpolicies -a " + account + " -v" + creds_info, suggest_filename="euare-accountlistpolicies-" + account)
-            self.collectExtOutput("/usr/bin/euare-userlistbypath --as-account " + account + creds_info, suggest_filename="euare-userlistbypath-" + account)
-            self.collectExtOutput("/usr/bin/euare-grouplistbypath --as-account " + account + creds_info, suggest_filename="euare-grouplistbypath-" + account)
+            self.collectExtOutput("/usr/bin/euare-accountaliaslist --delegate " + account + creds_info, suggest_filename="euare-accountaliaslist-" + account)
+            self.collectExtOutput("/usr/bin/euare-accountlistpolicies -a " + account + creds_info, suggest_filename="euare-accountlistpolicies-" + account)
+            self.collectExtOutput("/usr/bin/euare-userlistbypath --delegate " + account + creds_info, suggest_filename="euare-userlistbypath-" + account)
+            self.collectExtOutput("/usr/bin/euare-grouplistbypath --delegate " + account + creds_info, suggest_filename="euare-grouplistbypath-" + account)
         else:
             self.collectExtOutput("/usr/bin/euare-accountaliaslist --as-account " + account + " --region admin@sosreport", suggest_filename="euare-accountaliaslist-" + account)
             self.collectExtOutput("/usr/bin/euare-accountlistpolicies -a " + account + " -v --region admin@sosreport", suggest_filename="euare-accountlistpolicies-" + account)
             self.collectExtOutput("/usr/bin/euare-userlistbypath --as-account " + account + " --region admin@sosreport", suggest_filename="euare-userlistbypath-" + account)
             self.collectExtOutput("/usr/bin/euare-grouplistbypath --as-account " + account + " --region admin@sosreport", suggest_filename="euare-grouplistbypath-" + account)
 
-    def get_userlist(self, account):
+    def get_userlist(self, account, tmp_dir=''):
         """
         Grab list of users of the Euare account passed in and return the list of users
         """
         self.addDiagnose("### Grabbing version of euca2ools ###")
         euca2ools_version = self.checkversion('euca2ools')
-        if re.match('^2.1+', euca2ools_version):
+        if re.match('^2.1+', euca2ools_version) and tmp_dir:
             access_key = self.get_access_key(tmp_dir)     
             secret_key = self.get_secret_key(tmp_dir)
             iam_url = self.get_iam_url(tmp_dir)
-            get_userlist_cmd = ["/usr/bin/euare-userlistbypath", "--as-account", account, "-U", iam_url, "-I", access_key, "-S", secret_key]
+            if re.match('^eucalyptus', account):
+                get_userlist_cmd = ["/usr/bin/euare-userlistbypath", "-U", iam_url, "-I", access_key, "-S", secret_key]
+            else:
+                get_userlist_cmd = ["/usr/bin/euare-userlistbypath", "--delegate", account, "-U", iam_url, "-I", access_key, "-S", secret_key]
         else:
             get_userlist_cmd = ["/usr/bin/euare-userlistbypath", "--as-account", account, "--region", "admin@sosreport"]
 
@@ -474,24 +477,28 @@ class eucafrontend(sos.plugintools.PluginBase):
             users.append(user_id[1])    
         return users
 
-    def get_account_user_info(self, account, user):
+    def get_account_user_info(self, account, user, tmp_dir=''):
         """
         Grab resources of users in the Euare account passed in
         """
         self.addDiagnose("### Grabbing version of euca2ools ###")
         euca2ools_version = self.checkversion('euca2ools')
-        if re.match('^2.1+', euca2ools_version):
+        if re.match('^2.1+', euca2ools_version) and tmp_dir:
             access_key = self.get_access_key(tmp_dir)     
             secret_key = self.get_secret_key(tmp_dir)
             iam_url = self.get_iam_url(tmp_dir)
             creds_info = " -U " + iam_url + " -I " + access_key + " -S " + secret_key
-            self.collectExtOutput("/usr/bin/euare-usergetinfo --as-account " + account + " -u " + user + creds_info, suggest_filename="euare-usergetinfo-" + account + "-" + user)
-            self.collectExtOutput("/usr/bin/euare-usergetloginprofile --as-account " + account + " -u " + user + creds_info, suggest_filename="euare-usergetloginprofile-" + account + "-" + user)
-            self.collectExtOutput("/usr/bin/euare-userlistcerts --as-account " + account + " -u " + user + creds_info, suggest_filename="euare-userlistcerts-" + account + "-" + user)
-            self.collectExtOutput("/usr/bin/euare-usergetattributes --as-account " + account + " -u " + user + " --show-extra" + creds_info, suggest_filename="euare-usergetattributes-" + account + "-" + user)
-            self.collectExtOutput("/usr/bin/euare-userlistgroups --as-account " + account + " -u " + user + creds_info, suggest_filename="euare-userlistgroups-" + account + "-" + user)
-            self.collectExtOutput("/usr/bin/euare-userlistkeys --as-account " + account + " -u " + user + creds_info, suggest_filename="euare-userlistkeys-" + account + "-" + user)
-            self.collectExtOutput("/usr/bin/euare-userlistpolicies --as-account " + account + " -u " + user + " -v" + creds_info, suggest_filename="euare-userlistpolicies-" + account + "-" + user)
+            if re.match('^eucalyptus', account):
+                delegate = ''
+            else:
+                delegate = "--delegate " + account
+            self.collectExtOutput("/usr/bin/euare-usergetinfo " + delegate + " -u " + user + creds_info, suggest_filename="euare-usergetinfo-" + account + "-" + user)
+            self.collectExtOutput("/usr/bin/euare-usergetloginprofile " + delegate + " -u " + user + creds_info, suggest_filename="euare-usergetloginprofile-" + account + "-" + user)
+            self.collectExtOutput("/usr/bin/euare-userlistcerts " + delegate + " -u " + user + creds_info, suggest_filename="euare-userlistcerts-" + account + "-" + user)
+            self.collectExtOutput("/usr/bin/euare-usergetattributes " + delegate + " -u " + user + " --show-extra" + creds_info, suggest_filename="euare-usergetattributes-" + account + "-" + user)
+            self.collectExtOutput("/usr/bin/euare-userlistgroups " + delegate + " -u " + user + creds_info, suggest_filename="euare-userlistgroups-" + account + "-" + user)
+            self.collectExtOutput("/usr/bin/euare-userlistkeys " + delegate + " -u " + user + creds_info, suggest_filename="euare-userlistkeys-" + account + "-" + user)
+            self.collectExtOutput("/usr/bin/euare-userlistpolicies " + delegate + " -u " + user + " -v" + creds_info, suggest_filename="euare-userlistpolicies-" + account + "-" + user)
         else:
             self.collectExtOutput("/usr/bin/euare-usergetinfo --as-account " + account + " -u " + user + " --region admin@sosreport", suggest_filename="euare-usergetinfo-" + account + "-" + user)
             self.collectExtOutput("/usr/bin/euare-usergetloginprofile --as-account " + account + " -u " + user + " --region admin@sosreport", suggest_filename="euare-usergetloginprofile-" + account + "-" + user)
@@ -501,17 +508,20 @@ class eucafrontend(sos.plugintools.PluginBase):
             self.collectExtOutput("/usr/bin/euare-userlistkeys --as-account " + account + " -u " + user + " --region admin@sosreport", suggest_filename="euare-userlistkeys-" + account + "-" + user)
             self.collectExtOutput("/usr/bin/euare-userlistpolicies --as-account " + account + " -u " + user + " -v --region admin@sosreport", suggest_filename="euare-userlistpolicies-" + account + "-" + user)
     
-    def get_grouplist(self, account):
+    def get_grouplist(self, account, tmp_dir=''):
         """
         Grab the groups from the Euare account passed in and return the list
         """
         self.addDiagnose("### Grabbing version of euca2ools ###")
         euca2ools_version = self.checkversion('euca2ools')
-        if re.match('^2.1+', euca2ools_version):
+        if re.match('^2.1+', euca2ools_version) and tmp_dir:
             access_key = self.get_access_key(tmp_dir)     
             secret_key = self.get_secret_key(tmp_dir)
             iam_url = self.get_iam_url(tmp_dir)
-            get_grouplist_cmd = ["/usr/bin/euare-grouplistbypath", "--as-account", account, "-U", iam_url, "-I", access_key, "-S", secret_key]
+            if re.match('^eucalyptus', account):
+                get_grouplist_cmd = ["/usr/bin/euare-grouplistbypath", "-U", iam_url, "-I", access_key, "-S", secret_key]
+            else:
+                get_grouplist_cmd = ["/usr/bin/euare-grouplistbypath", "--delegate", account, "-U", iam_url, "-I", access_key, "-S", secret_key]
         else:
             get_grouplist_cmd = ["/usr/bin/euare-grouplistbypath", "--as-account", account, "--region", "admin@sosreport"]
 
@@ -534,7 +544,7 @@ class eucafrontend(sos.plugintools.PluginBase):
                 groups.append(group_id[1])    
         return groups
 
-    def get_account_group_info(self, account, group):
+    def get_account_group_info(self, account, group, tmp_dir=''):
         """
         Grab the resources of the groups in the Euare account passed in
         """
@@ -545,8 +555,12 @@ class eucafrontend(sos.plugintools.PluginBase):
             secret_key = self.get_secret_key(tmp_dir)
             iam_url = self.get_iam_url(tmp_dir)
             creds_info = " -U " + iam_url + " -I " + access_key + " -S " + secret_key
-            self.collectExtOutput("/usr/bin/euare-grouplistusers --as-account " + account + " -g " + group + creds_info, suggest_filename="euare-grouplistusers-" + account + "-" + group)
-            self.collectExtOutput("/usr/bin/euare-grouplistpolicies --as-account " + account + " -g " + group + " -v" + creds_info, suggest_filename="euare-grouplistpolicies-" + account + "-" + group)
+            if re.match('^eucalyptus', account):
+                delegate = ''
+            else:
+                delegate = "--delegate " + account
+            self.collectExtOutput("/usr/bin/euare-grouplistusers " + delegate + " -g " + group + creds_info, suggest_filename="euare-grouplistusers-" + account + "-" + group)
+            self.collectExtOutput("/usr/bin/euare-grouplistpolicies " + delegate + " -g " + group + " -v" + creds_info, suggest_filename="euare-grouplistpolicies-" + account + "-" + group)
         else:
             self.collectExtOutput("/usr/bin/euare-grouplistusers --as-account " + account + " -g " + group + " --region admin@sosreport", suggest_filename="euare-grouplistusers-" + account + "-" + group)
             self.collectExtOutput("/usr/bin/euare-grouplistpolicies --as-account " + account + " -g " + group + " -v --region admin@sosreport", suggest_filename="euare-grouplistpolicies-" + account + "-" + group)
@@ -577,7 +591,6 @@ class eucafrontend(sos.plugintools.PluginBase):
         self.collectExtOutput("/usr/sbin/euca-describe-vmware-brokers -U " + ec2_url + creds_info, suggest_filename="euca-describe-vmware-brokers")
         self.collectExtOutput("/usr/sbin/euca-describe-walruses -U " + ec2_url + creds_info, suggest_filename="euca-describe-walruses")
         self.collectExtOutput("/usr/bin/euca-version")
-        return
     
     def eucalyptus_ec2(self, tmp_dir):
         self.addDiagnose("### Grabbing version of euca2ools ###")
@@ -616,7 +629,6 @@ class eucafrontend(sos.plugintools.PluginBase):
             self.collectExtOutput("/usr/bin/euca-describe-snapshots verbose --region admin@sosreport", suggest_filename="euca-describe-snapshots-verbose")
             self.collectExtOutput("/usr/bin/euca-describe-volumes verbose --region admin@sosreport", suggest_filename="euca-describe-volumes-verbose")
             self.collectExtOutput("/usr/bin/euca-describe-tags --region admin@sosreport", suggest_filename="euca-describe-tags")
-        return
 
     def eucalyptus_iam(self, tmp_dir):
         self.addDiagnose("### Grabbing version of euca2ools ###")
@@ -626,12 +638,12 @@ class eucafrontend(sos.plugintools.PluginBase):
             secret_key = self.get_secret_key(tmp_dir)
             iam_url = self.get_iam_url(tmp_dir)
             self.collectExtOutput("/usr/bin/euare-accountlist -U " + iam_url + " -I " + access_key + " -S " + secret_key, suggest_filename="euare-accountlist")
-            for account in self.get_accountlist():
-                self.get_account_info(account)
-                for user in self.get_userlist(account):
-                    self.get_account_user_info(account, user)
-                for group in self.get_grouplist(account):
-                    self.get_account_group_info(account, group)
+            for account in self.get_accountlist(tmp_dir):
+                self.get_account_info(account, tmp_dir)
+                for user in self.get_userlist(account, tmp_dir):
+                    self.get_account_user_info(account, user, tmp_dir)
+                for group in self.get_grouplist(account, tmp_dir):
+                    self.get_account_group_info(account, group, tmp_dir)
         else:
             if not os.path.isfile('/etc/euca2ools/conf.d/sos-euca2ools.ini'):
                 self.addDiagnose("### Setting up sos-euca2ools.ini file ###")
@@ -647,8 +659,6 @@ class eucafrontend(sos.plugintools.PluginBase):
                 for group in self.get_grouplist(account):
                     self.get_account_group_info(account, group)
 
-        return
-
     def eucalyptus_autoscaling(self):
         self.collectExtOutput("/usr/bin/euscale-describe-auto-scaling-instances verbose --show-long --region admin@sosreport", suggest_filename="euscale-describe-auto-scaling-instances-verbose")
         self.collectExtOutput("/usr/bin/euscale-describe-auto-scaling-groups verbose --show-long --region admin@sosreport", suggest_filename="euscale-describe-auto-scaling-groups-verbose")
@@ -657,7 +667,6 @@ class eucafrontend(sos.plugintools.PluginBase):
         self.collectExtOutput("/usr/bin/euscale-describe-policies verbose --show-long --region admin@sosreport", suggest_filename="euscale-describe-policies-verbose")
         self.collectExtOutput("/usr/bin/euscale-describe-scaling-activities verbose --show-long --region admin@sosreport", suggest_filename="euscale-describe-scaling-activities-verbose")
         self.collectExtOutput("/usr/bin/euscale-describe-scheduled-actions verbose --show-long --region admin@sosreport", suggest_filename="euscale-describe-scheduled-actions-verbose")
-        return
 
     def eucalyptus_elb(self):
         self.collectExtOutput("/usr/bin/eulb-describe-lb-policies verbose --show-long --region admin@sosreport", suggest_filename="eulb-describe-lb-policies-verbose")
@@ -668,7 +677,6 @@ class eucafrontend(sos.plugintools.PluginBase):
     def eucalyptus_cloudwatch(self):
         self.collectExtOutput("/usr/bin/euwatch-describe-alarms verbose --show-long --region admin@sosreport", suggest_filename="euwatch-describe-alarms-verbose")
         self.collectExtOutput("/usr/bin/euwatch-describe-alarm-history verbose --show-long --region admin@sosreport", suggest_filename="euwatch-describe-alarm-history-verbose")
-        return
 
     def setup(self):
         self.addDiagnose("### Check to make sure eucalyptus-cloud is running ###")
