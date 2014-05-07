@@ -577,19 +577,18 @@ class eucafrontend(sos.plugintools.PluginBase):
         self.addDiagnose("### Grabbing eucalyptus/admin credentials ###")
         access_key = self.get_access_key(tmp_dir)     
         secret_key = self.get_secret_key(tmp_dir)
-        ec2_url = self.get_ec2_url(tmp_dir)
+        empyrean_url = "http://127.0.0.1:8773/services/Empyrean/"
         creds_info = " -I " + access_key + " -S " + secret_key
-        self.collectExtOutput("/usr/sbin/euca-describe-arbitrators -U " + ec2_url + creds_info, suggest_filename="euca-describe-arbitrators")
-        self.collectExtOutput("/usr/sbin/euca-describe-clouds -U " + ec2_url + creds_info, suggest_filename="euca-describe-clouds")
-        self.collectExtOutput("/usr/sbin/euca-describe-clusters -U " + ec2_url + creds_info, suggest_filename="euca-describe-clusters")
-        self.collectExtOutput("/usr/sbin/euca-describe-components -U " + ec2_url + creds_info, suggest_filename="euca-describe-components")
-        self.collectExtOutput("/usr/sbin/euca-describe-nodes -U http://127.0.0.1:8773/services/Empyrean/ " + creds_info, suggest_filename="euca-describe-nodes")
-        self.collectExtOutput("/usr/sbin/euca-describe-properties -U " + ec2_url + creds_info, suggest_filename="euca-describe-properties")
-        self.collectExtOutput("/usr/bin/euca-describe-regions -U " + ec2_url + creds_info, suggest_filename="euca-describe-regions")
+        self.collectExtOutput("/usr/sbin/euca-describe-arbitrators -U " + empyrean_url + creds_info, suggest_filename="euca-describe-arbitrators")
+        self.collectExtOutput("/usr/sbin/euca-describe-clouds -U " + empyrean_url + creds_info, suggest_filename="euca-describe-clouds")
+        self.collectExtOutput("/usr/sbin/euca-describe-clusters -U " + empyrean_url + creds_info, suggest_filename="euca-describe-clusters")
+        self.collectExtOutput("/usr/sbin/euca-describe-components -U " + empyrean_url + creds_info, suggest_filename="euca-describe-components")
+        self.collectExtOutput("/usr/sbin/euca-describe-nodes -U " + empyrean_url + creds_info, suggest_filename="euca-describe-nodes")
+        self.collectExtOutput("/usr/sbin/euca-describe-properties -U " + empyrean_url + creds_info, suggest_filename="euca-describe-properties")
         self.collectExtOutput("/usr/sbin/euca-describe-services --all -E", suggest_filename="euca-describe-services-all")
-        self.collectExtOutput("/usr/sbin/euca-describe-storage-controllers -U " + ec2_url + creds_info, suggest_filename="euca-describe-storage-controllers")
-        self.collectExtOutput("/usr/sbin/euca-describe-vmware-brokers -U " + ec2_url + creds_info, suggest_filename="euca-describe-vmware-brokers")
-        self.collectExtOutput("/usr/sbin/euca-describe-walruses -U " + ec2_url + creds_info, suggest_filename="euca-describe-walruses")
+        self.collectExtOutput("/usr/sbin/euca-describe-storage-controllers -U " + empyrean_url + creds_info, suggest_filename="euca-describe-storage-controllers")
+        self.collectExtOutput("/usr/sbin/euca-describe-vmware-brokers -U " + empyrean_url + creds_info, suggest_filename="euca-describe-vmware-brokers")
+        self.collectExtOutput("/usr/sbin/euca-describe-walruses -U " + empyrean_url + creds_info, suggest_filename="euca-describe-walruses")
         self.collectExtOutput("/usr/bin/euca-version")
     
     def eucalyptus_ec2(self, tmp_dir):
@@ -599,8 +598,9 @@ class eucafrontend(sos.plugintools.PluginBase):
             access_key = self.get_access_key(tmp_dir)     
             secret_key = self.get_secret_key(tmp_dir)
             ec2_url = self.get_ec2_url(tmp_dir)
-            creds_info = "-U " + ec2_url + " -I " + access_key + " -S " + secret_key
+            creds_info = "-U " + ec2_url + " --access-key " + access_key + " --secret-key " + secret_key
             self.collectExtOutput("/usr/bin/euca-describe-addresses verbose " + creds_info, suggest_filename="euca-describe-addresses-verbose")
+            self.collectExtOutput("/usr/bin/euca-describe-regions " + creds_info, suggest_filename="euca-describe-regions")
             self.collectExtOutput("/usr/bin/euca-describe-availability-zones verbose " + creds_info, suggest_filename="euca-describe-availability-zones-verbose")
             self.collectExtOutput("/usr/bin/euca-describe-instance-types --show-capacity --by-zone " + creds_info, suggest_filename="euca-describe-instance-types-show-capacity")
             self.collectExtOutput("/usr/bin/euca-describe-groups verbose " + creds_info, suggest_filename="euca-describe-groups-verbose")
@@ -624,6 +624,7 @@ class eucafrontend(sos.plugintools.PluginBase):
             self.collectExtOutput("/usr/bin/euca-describe-groups verbose --region admin@sosreport", suggest_filename="euca-describe-groups-verbose")
             self.collectExtOutput("/usr/bin/euca-describe-images --all --region admin@sosreport", suggest_filename="euca-describe-images-all")
             self.collectExtOutput("/usr/bin/eustore-describe-images -v --region admin@sosreport", suggest_filename="eustore-describe-images")
+            self.collectExtOutput("/usr/bin/euca-describe-regions --region admin@sosreport", suggest_filename="euca-describe-regions")
             self.collectExtOutput("/usr/bin/euca-describe-instances verbose --region admin@sosreport", suggest_filename="euca-describe-instances-verbose")
             self.collectExtOutput("/usr/bin/euca-describe-keypairs verbose --region admin@sosreport", suggest_filename="euca-describe-keypairs-verbose")
             self.collectExtOutput("/usr/bin/euca-describe-snapshots verbose --region admin@sosreport", suggest_filename="euca-describe-snapshots-verbose")
