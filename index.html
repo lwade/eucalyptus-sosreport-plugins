@@ -35,7 +35,7 @@
 
 <p><a href="https://github.com/sosreport/sosreport" title="sosreport/sosreport">sosreport</a> is a tool used by many companies to gather the current state of a system into a portable archive primarily for use in troubleshooting. Eucalyptus Customer Success members identified the potentials of sosreport and created a package with plugins that target Eucalyptus support needs. Everything is written in Python and is easy to modify to our needs.</p>
 
-<p>This project contains plugins for sosreport that focus on the collection needs of Eucalyptus Clouds. Once these plugins have been added to a system with sosreport when run sosreport will pick up and execute them if applicable and place the output into the archive.</p>
+<p>This project contains plugins for sosreport that focus on the collection needs of Eucalyptus Clouds. Once these plugins have been added to a system with sosreport when run sosreport will pick up and execute them if applicable and place the output into the archive.  This plugin supports clouds running Eucalyptus 3.2.2 or later.</p>
 
 <p>These plugins focus on these areas:</p>
 
@@ -45,6 +45,7 @@
 <li><a href="https://github.com/eucalyptus/eucalyptus-sosreport-plugins/blob/master/sos/plugins/eucadb.py" target="_blank">eucadb</a> - Output from the Eucalyptus database.</li>
 <li><a href="https://github.com/eucalyptus/eucalyptus-sosreport-plugins/blob/master/sos/plugins/eucafrontend.py" target="_blank">eucafrontend</a> - Executed on the frontend (CLC) using the installed euca2ools and eucalyptus-admin-tools</li>
 <li><a href="https://github.com/eucalyptus/eucalyptus-sosreport-plugins/blob/master/sos/plugins/eucacluster.py" target="_blank">eucacluster</a> - Executed on the Cluster Controller (CC); grabs information unique to the CC</li>
+<li><a href="https://github.com/eucalyptus/eucalyptus-sosreport-plugins/blob/master/sos/plugins/eucanode.py" target="_blank">eucanode</a> - Executed on the Node Controller (NC); grabs information unique to the NC</li>
 	
 </ul><h2>
 <a name="history" class="anchor" href="#history"><span class="octicon octicon-link"></span></a>History</h2>
@@ -76,7 +77,7 @@ wget 'http://downloads.eucalyptus.com/software/tools/tools.repo'
 
 <p>Install the eucalyptus-sos-tools package which will install the sos package if it is not already installed.</p>
 
-<pre lang="shell"><code>yum install --nogpgcheck eucalyptus-sos-plugins
+<pre lang="shell"><code>yum install eucalyptus-sos-plugins
 </code></pre>
 
 <p><strong>NOTE:</strong> The RPM for the latest major release can be downloaded from <a href="https://github.com/eucalyptus/eucalyptus-sosreport-plugins/releases" target="_blanck">eucalyptus-sos-plugins releases page</a> as well.  After downloading the RPM, <a href="http://www.rpm.org/" target="_blank">rpm</a> or <a href="http://yum.baseurl.org/" target="_blank">yum</a> can be used to install eucalyptus-sos-plugins.</p> 
