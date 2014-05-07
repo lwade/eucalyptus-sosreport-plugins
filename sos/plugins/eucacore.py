@@ -30,9 +30,12 @@ class eucacore(sos.plugintools.PluginBase):
     def setup(self):
         self.addCopySpec("/etc/eucalyptus")
         self.addCopySpec("/var/log/eucalyptus/*")
+        self.addCopySpec("/var/lib/eucalyptus/keys")
         if os.path.isfile('/usr/bin/sha1sum'):
             self.collectExtOutput("find /var/lib/eucalyptus/keys -type f -print | xargs -I {} sha1sum {}", suggest_filename="sha1sum-eucalyptus-keys")
         hprof_list = glob.glob('/var/log/eucalyptus/*.hprof')
         if hprof_list:
             self.collectExtOutput("rm -rf /var/log/eucalyptus/*.hprof", suggest_filename="hprof-removal")
+        if os.path.isfile('/sbin/iptables-save'):
+            self.collectExtOutput("/sbin/iptables-save --counters", suggest_filename="iptables-save-counters")
         return
