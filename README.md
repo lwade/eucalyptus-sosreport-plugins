@@ -11,6 +11,7 @@ These plugins focus on these areas:
 * Core - Logs and commands that exist on all eucalpyus installs.
 * DB - Output from the database.
 * Frontend - Executed on the frontend using the installed euca2ools and eucalyptus-admin-tools
+* Node - Information from the Node Controller
 
 ## History:
 eucalyptus-sosreport-plugins was formally a part of [doctor-euca](https://github.com/eucalyptus/doctor-euca "eucalyptus/doctor-euca").
@@ -20,7 +21,7 @@ You will want to make sure that when you execute sosreport that you have already
 The original work for the project was done by [Tom Ellis](https://github.com/tomellis). The torch was picked up by [Richard Isaacson](https://github.com/risaacson) to drive and improve the project. Currently the project is being maintained by the Eucalyptus Tier 3 group, which is headed by [Harold Spencer, Jr.](https://github.com/hspencer77).
 
 ## Targeted Systems:
-The plugins package currently targets the version of sosreport that exists in the main CentOS 6.4 repository.
+The plugins package currently targets the version of sosreport that exists in the main CentOS 6.4/6.5 repository.
 
 ## Installation:
 It is preferred to install eucalyptus-sosreport-plugins via the package but if not once sosreport is installed you are able to manually copy the files into the plugins directory.
@@ -63,7 +64,7 @@ Execution of sosreport is simple and straight forward. You will need to make sur
 At the very least we want to make sure to use the `–batch` option so that interactive questions are no asked.
 
 ```shell
-sosreport --batch
+sosreport --batch --ticket=<ticket-number> --name=<user/customer-name>
 ```
 
 Execution could take severl moments. If it seems to be running long and it is not stuck on the databse the system plugin could be stuck. To skip the system plugin execute the following command.
@@ -95,13 +96,13 @@ You are invited to point out any problems that might have happened while running
 If you don't know exactly what eucalyptus plugin failed please run the following and attach the output.
 
 ```shell
-sosreport --batch --only-plugins eucacore,eucadb,eucafrontend,eucaconsole,eucacluster -vv
+sosreport --batch --only-plugins eucacore,eucadb,eucafrontend,eucaconsole,eucacluster,eucanode -vv --debug
 ```
 
 If you can identify a single plugin that is having problems run only that plugin and pull the output.
 
 ```shell
-sosreport --batch --only-plugins PLUGIN -vv
+sosreport --batch --only-plugins PLUGIN -vv --debug
 ```
 
 It can also be helpful to avoid creating an archive. If you use the '–build' flag to leave the directory structure intact. sosreport will print a message about where the directory structure is located.
