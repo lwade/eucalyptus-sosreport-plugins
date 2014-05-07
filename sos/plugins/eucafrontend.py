@@ -587,7 +587,8 @@ class eucafrontend(sos.plugintools.PluginBase):
         self.collectExtOutput("/usr/sbin/euca-describe-properties -U " + empyrean_url + creds_info, suggest_filename="euca-describe-properties")
         self.collectExtOutput("/usr/sbin/euca-describe-services --all -E", suggest_filename="euca-describe-services-all")
         self.collectExtOutput("/usr/sbin/euca-describe-storage-controllers -U " + empyrean_url + creds_info, suggest_filename="euca-describe-storage-controllers")
-        self.collectExtOutput("/usr/sbin/euca-describe-vmware-brokers -U " + empyrean_url + creds_info, suggest_filename="euca-describe-vmware-brokers")
+        if self.isInstalled("eucalyptus-enterprise-vmware-broker"):
+            self.collectExtOutput("/usr/sbin/euca-describe-vmware-brokers -U " + empyrean_url + creds_info, suggest_filename="euca-describe-vmware-brokers")
         self.collectExtOutput("/usr/sbin/euca-describe-walruses -U " + empyrean_url + creds_info, suggest_filename="euca-describe-walruses")
         self.collectExtOutput("/usr/bin/euca-version")
     
