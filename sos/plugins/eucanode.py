@@ -17,6 +17,7 @@
 import sos.plugintools
 import subprocess
 import csv
+import fileinput
 
 class eucanode(sos.plugintools.PluginBase):
     """Eucalyptus Cloud - Node Controller
@@ -27,8 +28,11 @@ class eucanode(sos.plugintools.PluginBase):
         return False
 
     def setup(self):
+        conf = file('/etc/eucalyptus/eucalyptus.conf')
+        for line in conf:
+            if 'EDGE' in line:
+                self.addCopySpec("/var/lib/eucalyptus/global_network_info.xml")
         self.collectExtOutput("/usr/bin/virsh list", suggest_filename="virsh-list")
-
         virsh_result = subprocess.Popen("virsh list | tail -n +3", stdout=subprocess.PIPE, shell=True)
         output, err = virsh_result.communicate()
         reader = csv.DictReader(output.decode('ascii').splitlines(), delimiter=' ', skipinitialspace=True, fieldnames=['id', 'name', 'state'])
